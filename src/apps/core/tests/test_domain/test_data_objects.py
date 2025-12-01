@@ -1,9 +1,15 @@
-from itertools import chain
 import json
+from itertools import chain
+
 import pytest
 
-
-from apps.core.domain.data_objects import Board, Coordinates, GameConfig, MineBlock
+from apps.core.domain.data_objects import (
+    Board,
+    Boom,
+    Coordinates,
+    GameConfig,
+    MineBlock,
+)
 
 
 @pytest.mark.parametrize(
@@ -52,6 +58,37 @@ def test_block(board: Board):
 
 def test_as_dict(board: Board):
     assert json.dumps(board.as_dict())
+
+
+def test_dig_with_bomb(board: Board):
+    block = board.get_block(Coordinates(0, 1))
+    with pytest.raises(Boom):
+        block.dig(board)
+
+    assert block.display == "💣"
+
+
+def test_dig_cascades__changes_display(board: Board):
+    block = board.get_block(Coordinates(2, 2))
+    block.dig(board)
+
+    assert board.blocks == [
+        [
+            MineBlock(coordinates=Coordinates(x=0, y=0), is_bomb=False, display=""),
+            MineBlock(coordinates=Coordinates(x=0, y=1), is_bomb=True, display=""),
+            MineBlock(coordinates=Coordinates(x=0, y=2), is_bomb=True, display=""),
+        ],
+        [
+            MineBlock(coordinates=Coordinates(x=1, y=0), is_bomb=False, display="1"),
+            MineBlock(coordinates=Coordinates(x=1, y=1), is_bomb=False, display="2"),
+            MineBlock(coordinates=Coordinates(x=1, y=2), is_bomb=False, display="2"),
+        ],
+        [
+            MineBlock(coordinates=Coordinates(x=2, y=0), is_bomb=False, display="0"),
+            MineBlock(coordinates=Coordinates(x=2, y=1), is_bomb=False, display="0"),
+            MineBlock(coordinates=Coordinates(x=2, y=2), is_bomb=False, display="0"),
+        ],
+    ]
 
 
 @pytest.fixture
