@@ -3,15 +3,15 @@ from itertools import chain
 import math
 import random
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from enum import Enum
-from typing import NamedTuple, Self
+from typing import Self
 
-from django.core import exceptions
 from .exceptions import Boom
 
 
-class Coordinates(NamedTuple):
+@dataclass
+class Coordinates:
     x: int
     y: int
 
@@ -68,6 +68,9 @@ class MineBlock:
         neighbors = self.get_neighbors(board)
         return len([n for n in neighbors if n.is_bomb])
 
+    def as_dict(self):
+        return asdict(self)
+
 
 @dataclass
 class Board:
@@ -85,7 +88,7 @@ class Board:
 
     def replace_block(self, new_block: MineBlock) -> None:
         """Replace a block on the board"""
-        x, y = new_block.coordinates
+        x, y = (new_block.coordinates.x, new_block.coordinates.y)
         self.blocks[x][y] = new_block
 
     @property
@@ -95,6 +98,10 @@ class Board:
         width = len(self.blocks)
         height = len(self.blocks) if width else 0
         return (width, height)
+
+    def as_dict(self):
+        blocks = [asdict(b) for b in chain(*self.blocks)]
+        return {**asdict(self), "blocks": blocks}
 
 
 @dataclass
