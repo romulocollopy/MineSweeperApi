@@ -26,11 +26,17 @@ class GameManager(models.Manager):
         board = GameConfig(difficulty).new_board()
         return self.create(slug=slug, difficulty=difficulty, board=asdict(board))
 
+    def get_by_slug(
+        self,
+        slug: str,
+    ):
+        return self.get(slug=slug)
+
 
 class Game(BaseModel):
     objects = GameManager()
 
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True)
     board = models.JSONField(default=empty_board)
     game_over = models.BooleanField(default=False)
     won = models.BooleanField(default=False)

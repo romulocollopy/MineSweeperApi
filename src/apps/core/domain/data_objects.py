@@ -69,7 +69,9 @@ class MineBlock:
         return len([n for n in neighbors if n.is_bomb])
 
     def as_dict(self):
-        return asdict(self)
+        api_dict = asdict(self)
+        del api_dict["is_bomb"]
+        return api_dict
 
 
 @dataclass
@@ -100,7 +102,7 @@ class Board:
         return (width, height)
 
     def as_dict(self):
-        blocks = [asdict(b) for b in chain(*self.blocks)]
+        blocks = [bl.as_dict() for bl in chain(*self.blocks)]
         return {**asdict(self), "blocks": blocks}
 
 

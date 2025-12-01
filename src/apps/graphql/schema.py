@@ -1,6 +1,7 @@
 import graphene
 
 from src.apps.core.domain.data_objects import GameConfig
+from src.apps.core.models import Game
 
 
 class UserType(graphene.ObjectType):
@@ -20,21 +21,26 @@ class MineBlockType(graphene.ObjectType):
 
 
 class BoardType(graphene.ObjectType):
-    id = graphene.ID()
+    slug = graphene.String()
     blocks = graphene.List(MineBlockType)
 
 
 class Query(graphene.ObjectType):
     viewer = graphene.Field(UserType)
-    mineSweeper = graphene.Field(BoardType, id=graphene.ID(required=True))
+    mineSweeper = graphene.Field(BoardType, slug=graphene.String(required=True))
 
     def resolve_viewer(self, info):
         # Just return a dict with the required fields
         return {"id": "user_123", "name": "Test User", "email": "test@example.com"}
 
-    def resolve_mineSweeper(self, info, id):
+    def resolve_mineSweeper(self, info, slug):
         # Just return a dict with the required fields
-        return GameConfig(GameConfig.Difficulty.medium).new_board().as_dict()
+        try:
+            game = Game.objects.get_by_slug(slug=slug)
+        except Game.DoesNotExist:
+            game = Game.objects.new_game(slug=slug)
+
+        return {"slug": game.slug, **game.get_board().as_dict()}
 
 
 schema = graphene.Schema(query=Query)
