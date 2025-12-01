@@ -17,11 +17,13 @@ class CoordinateType(graphene.ObjectType):
 class MineBlockType(graphene.ObjectType):
     coordinates = graphene.Field(CoordinateType)
     display = graphene.String()
+    is_flagged = graphene.Boolean()
 
 
 class BoardType(graphene.ObjectType):
     slug = graphene.String()
     blocks = graphene.List(MineBlockType)
+    flags = graphene.Int()
 
 
 class Query(graphene.ObjectType):

@@ -49,5 +49,6 @@ class Game(BaseModel):
 
     def get_board(self) -> Board:
         return Board(
-            blocks=[[MineBlock(**b) for b in col] for col in self.board["blocks"]]
+            blocks=[[MineBlock(**b) for b in col] for col in self.board["blocks"]],
+            flags=self.board["flags"],
         )

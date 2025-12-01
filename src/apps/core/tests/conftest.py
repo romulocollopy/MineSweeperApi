@@ -23,6 +23,7 @@ def board():
     0, 0, 0
     """
     return Board(
+        flags=2,
         blocks=[
             [
                 MineBlock(coordinates=Coordinates(0, 0)),
@@ -39,5 +40,5 @@ def board():
                 MineBlock(coordinates=Coordinates(2, 1)),
                 MineBlock(coordinates=Coordinates(2, 2)),
             ],
-        ]
+        ],
     )

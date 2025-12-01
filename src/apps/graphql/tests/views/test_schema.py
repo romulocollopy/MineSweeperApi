@@ -36,12 +36,14 @@ def test_game_schema(client_query, game):
         query MineSweeperQuery($slug: String!) {
             mineSweeper(slug: $slug) {
             slug
+            flags
             blocks {
                 coordinates {
                     x
                     y
                 }
                     display
+                    isFlagged
                 }
             }
         }
@@ -53,10 +55,24 @@ def test_game_schema(client_query, game):
     )
 
     assert "data" in resp
-    assert resp["data"]["mineSweeper"] == {
+
+    expected = {
         "slug": game.slug,
         **game.get_board().as_dict(),
     }
+
+    def replaceFlag(block):
+        block["isFlagged"] = block.pop("is_flagged")
+        return block
+
+    expected["blocks"] = list(
+        map(
+            replaceFlag,
+            expected["blocks"],
+        )
+    )
+
+    assert resp["data"]["mineSweeper"] == expected
 
 
 @pytest.fixture

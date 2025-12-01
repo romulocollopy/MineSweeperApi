@@ -79,6 +79,6 @@ def test_dig_cascades__changes_display(board: Board):
     assert board.blocks[1][1].display == "2"
     assert board.blocks[1][2].display == "2"
 
-    assert board.blocks[2][0].display == "0"
-    assert board.blocks[2][1].display == "0"
-    assert board.blocks[2][2].display == "0"
+    assert board.blocks[2][0].display == "-"
+    assert board.blocks[2][1].display == "-"
+    assert board.blocks[2][2].display == "-"

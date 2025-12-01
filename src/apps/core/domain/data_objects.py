@@ -22,6 +22,7 @@ class MineBlock:
 
     coordinates: Coordinates
     is_bomb: bool = False
+    is_flagged: bool = False
     display: str = ""
 
     def __post_init__(self):
@@ -42,11 +43,27 @@ class MineBlock:
 
         return board
 
+    def flag(self, board):
+        if board.get_flag():
+            self.is_flagged = True
+            self.display = "🚩"
+
+    def remove_flag(self, board):
+        if self.is_flagged:
+            self.is_flagged = False
+            self.display = ""
+            board.return_flag()
+
     def reveal(self, board: Board) -> None:
         if self.is_bomb:
             self.display = "💣"
-        else:
-            self.display = str(self.bombs_around(board))
+            return
+
+        if bombs := self.bombs_around(board):
+            self.display = str(bombs)
+            return
+
+        self.display = "-"
 
     def get_neighbors(self, board: Board) -> list[MineBlock]:
         x = self.coordinates.x
@@ -81,6 +98,7 @@ class MineBlock:
 @dataclass
 class Board:
     blocks: list[list[MineBlock]]
+    flags: int
 
     def get_block(self, coordinates: Coordinates) -> MineBlock:
         """Get a block at specific coordinates"""
@@ -109,6 +127,15 @@ class Board:
         blocks = [bl.as_dict() for bl in chain(*self.blocks)]
         return {**asdict(self), "blocks": blocks}
 
+    def get_flag(self):
+        if self.flags > 0:
+            self.flags -= 1
+            return True
+        return False
+
+    def return_flag(self):
+        self.flags += 1
+
 
 @dataclass
 class GameConfig:
@@ -122,7 +149,8 @@ class GameConfig:
     difficulty: Difficulty
 
     def new_board(self):
-        return Board(blocks=generate_blocks(*self.difficulty.value))
+        width, height, bombs = self.difficulty.value
+        return Board(blocks=generate_blocks(width, height, bombs), flags=bombs)
 
 
 def generate_blocks(width: int, height: int, bomb_count: int) -> list[list[MineBlock]]:
