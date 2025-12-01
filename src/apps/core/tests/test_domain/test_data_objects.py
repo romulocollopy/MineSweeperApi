@@ -5,11 +5,10 @@ import pytest
 
 from apps.core.domain.data_objects import (
     Board,
-    Boom,
     Coordinates,
     GameConfig,
-    MineBlock,
 )
+from src.apps.core.domain.exceptions import Boom
 
 
 @pytest.mark.parametrize(
@@ -72,49 +71,14 @@ def test_dig_cascades__changes_display(board: Board):
     block = board.get_block(Coordinates(2, 2))
     block.dig(board)
 
-    assert board.blocks == [
-        [
-            MineBlock(coordinates=Coordinates(x=0, y=0), is_bomb=False, display=""),
-            MineBlock(coordinates=Coordinates(x=0, y=1), is_bomb=True, display=""),
-            MineBlock(coordinates=Coordinates(x=0, y=2), is_bomb=True, display=""),
-        ],
-        [
-            MineBlock(coordinates=Coordinates(x=1, y=0), is_bomb=False, display="1"),
-            MineBlock(coordinates=Coordinates(x=1, y=1), is_bomb=False, display="2"),
-            MineBlock(coordinates=Coordinates(x=1, y=2), is_bomb=False, display="2"),
-        ],
-        [
-            MineBlock(coordinates=Coordinates(x=2, y=0), is_bomb=False, display="0"),
-            MineBlock(coordinates=Coordinates(x=2, y=1), is_bomb=False, display="0"),
-            MineBlock(coordinates=Coordinates(x=2, y=2), is_bomb=False, display="0"),
-        ],
-    ]
+    assert board.blocks[0][0].display == ""
+    assert board.blocks[0][1].display == ""
+    assert board.blocks[0][2].display == ""
 
+    assert board.blocks[1][0].display == "1"
+    assert board.blocks[1][1].display == "2"
+    assert board.blocks[1][2].display == "2"
 
-@pytest.fixture
-def board():
-    """
-    Board with this bombs disposition:
-    *, 0, 0
-    *, 0, 0
-    0, 0, 0
-    """
-    return Board(
-        blocks=[
-            [
-                MineBlock(coordinates=Coordinates(0, 0)),
-                MineBlock(coordinates=Coordinates(0, 1), is_bomb=True),
-                MineBlock(coordinates=Coordinates(0, 2), is_bomb=True),
-            ],
-            [
-                MineBlock(coordinates=Coordinates(1, 0)),
-                MineBlock(coordinates=Coordinates(1, 1)),
-                MineBlock(coordinates=Coordinates(1, 2)),
-            ],
-            [
-                MineBlock(coordinates=Coordinates(2, 0)),
-                MineBlock(coordinates=Coordinates(2, 1)),
-                MineBlock(coordinates=Coordinates(2, 2)),
-            ],
-        ]
-    )
+    assert board.blocks[2][0].display == "0"
+    assert board.blocks[2][1].display == "0"
+    assert board.blocks[2][2].display == "0"

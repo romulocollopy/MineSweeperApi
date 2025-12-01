@@ -40,6 +40,3 @@ class Query(graphene.ObjectType):
             game = Game.objects.new_game(slug=slug)
 
         return {"slug": game.slug, **game.get_board().as_dict()}
-
-
-schema = graphene.Schema(query=Query)

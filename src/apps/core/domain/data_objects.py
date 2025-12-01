@@ -7,7 +7,7 @@ from dataclasses import asdict, dataclass
 from enum import Enum
 from typing import Self
 
-from .exceptions import Boom
+from src.apps.core.domain.exceptions import Boom
 
 
 @dataclass
@@ -23,6 +23,10 @@ class MineBlock:
     coordinates: Coordinates
     is_bomb: bool = False
     display: str = ""
+
+    def __post_init__(self):
+        if isinstance(self.coordinates, dict):
+            self.coordinates = Coordinates(**self.coordinates)
 
     def dig(self, board: Board, origin: Self | None = None) -> Board:
         self.reveal(board)

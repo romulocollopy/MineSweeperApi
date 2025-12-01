@@ -15,8 +15,3 @@ def test_game(game):
 def test_get_board(game):
     board = game.get_board()
     assert isinstance(board, Board)
-
-
-@pytest.fixture
-def game():
-    return Game.objects.new_game("my-game")
