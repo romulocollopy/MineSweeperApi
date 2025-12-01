@@ -25,17 +25,11 @@ dev = [
 pythonpath = "./src"
 DJANGO_SETTINGS_MODULE = "src.config.settings"
 
-[tool.pyright]
-extraPaths = ["./src"]
-
 [tool.ruff]
 docstring-code-format = true
 
 [tool.mypy]
 mypy_path = "src/apps/core/domain"
-include = [
-  "src/apps/code/domain/.*\\.py$", # All .py files in your module
-]
 
 strict = true
 python_version = "3.13"
