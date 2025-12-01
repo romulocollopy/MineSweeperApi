@@ -1,6 +1,5 @@
 import graphene
 
-from src.apps.core.domain.data_objects import GameConfig
 from src.apps.core.models import Game
 
 

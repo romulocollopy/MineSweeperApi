@@ -26,7 +26,7 @@ pythonpath = "./src"
 DJANGO_SETTINGS_MODULE = "src.config.settings"
 
 [tool.ruff]
-docstring-code-format = true
+extend-exclude = ["**/migrations/*"]
 
 [tool.mypy]
 mypy_path = "src/apps/core/domain"
