@@ -15,6 +15,7 @@ dependencies = [
 dev = [
   "flake8[bugbear]>=7.3.0",
   "ipdb>=0.13.13",
+  "mypy>=1.19.0",
   "pytest>=8.4.2",
   "pytest-django>=4.11.1",
   "ruff>=0.14.3",
@@ -26,3 +27,16 @@ DJANGO_SETTINGS_MODULE = "src.config.settings"
 
 [tool.pyright]
 extraPaths = ["./src"]
+
+[tool.ruff]
+docstring-code-format = true
+
+[tool.mypy]
+mypy_path = "src/apps/core/domain"
+include = [
+  "src/apps/code/domain/.*\\.py$", # All .py files in your module
+]
+
+strict = true
+python_version = "3.13"
+show_error_codes = true
