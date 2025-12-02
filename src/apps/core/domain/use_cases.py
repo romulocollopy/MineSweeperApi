@@ -26,7 +26,10 @@ def update_board_use_case(slug: str, x: int, y: int, action: str):
         game.finish_time = datetime.datetime.now()
         board = exc.board
     finally:
+        if board.has_won():
+            game.won = True
+            game.finish_time = datetime.datetime.now()
         game.board = asdict(board)
         game.save()
 
-    return board, game.game_over
+    return board, game.game_over, game.won

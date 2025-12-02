@@ -2,8 +2,6 @@ from http import HTTPStatus
 
 import pytest
 
-from src.apps.core.models import Game
-
 
 def test_schema_empty_query(client_query):
     with pytest.raises(AssertionError) as exc_info:
@@ -63,6 +61,7 @@ def test_game_schema(client_query, game):
 
     def replaceFlag(block):
         block["isFlagged"] = block.pop("is_flagged")
+        del block["is_reveled"]
         return block
 
     expected["blocks"] = list(

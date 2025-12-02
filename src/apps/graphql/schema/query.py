@@ -24,6 +24,8 @@ class BoardType(graphene.ObjectType):
     slug = graphene.String()
     blocks = graphene.List(MineBlockType)
     flags = graphene.Int()
+    game_over = graphene.Boolean()
+    won = graphene.Boolean()
 
 
 class Query(graphene.ObjectType):
@@ -41,4 +43,8 @@ class Query(graphene.ObjectType):
         except Game.DoesNotExist:
             game = Game.objects.new_game(slug=slug)
 
-        return {"slug": game.slug, **game.get_board().as_dict()}
+        return {
+            **game.get_board().as_dict(),
+            "game_over": game.game_over,
+            "won": game.won,
+        }

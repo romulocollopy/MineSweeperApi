@@ -28,6 +28,7 @@ class MineBlock:
     coordinates: Coordinates
     is_bomb: bool = False
     is_flagged: bool = False
+    is_reveled: bool = False
     display: str = ""
 
     def __post_init__(self):
@@ -66,6 +67,7 @@ class MineBlock:
             board.return_flag()
 
     def reveal(self, board: Board) -> None:
+        self.is_reveled = True
         if self.is_bomb:
             self.display = Symbols.bomb
             return
@@ -147,6 +149,9 @@ class Board:
 
     def return_flag(self):
         self.flags += 1
+
+    def has_won(self):
+        return all([bl.is_reveled or bl.is_bomb for bl in chain(*self.blocks)])
 
 
 @dataclass

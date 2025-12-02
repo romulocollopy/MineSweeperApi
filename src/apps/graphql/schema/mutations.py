@@ -17,15 +17,18 @@ class UpdateBoardMutation(graphene.Mutation):
 
     # What the mutation returns
     game_over = graphene.Boolean()
+    won = graphene.Boolean()
     mine_sweeper = graphene.Field(lambda: BoardType)
 
     def mutate(self, info, slug, coordinates, action):
         x = coordinates.get("x")
         y = coordinates.get("y")
 
-        board, game_over = update_board_use_case(slug, x, y, action)
+        board, game_over, won = update_board_use_case(slug, x, y, action)
 
-        return UpdateBoardMutation(game_over=game_over, mine_sweeper=board.as_dict())
+        return UpdateBoardMutation(
+            game_over=game_over, mine_sweeper=board.as_dict(), won=won
+        )
 
 
 class Mutation(graphene.ObjectType):

@@ -67,6 +67,13 @@ def test_dig_with_bomb(board: Board):
     assert block.display == "💣"
 
 
+def test_won(board):
+    for block in chain(*board.blocks):
+        if not block.is_bomb:
+            block.reveal(board)
+    assert board.has_won()
+
+
 def test_dig_cascades__changes_display(board: Board):
     block = board.get_block(Coordinates(2, 2))
     block.dig(board)
