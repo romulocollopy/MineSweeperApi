@@ -4,9 +4,15 @@ import math
 import random
 
 from dataclasses import asdict, dataclass
-from enum import Enum
+from enum import Enum, StrEnum
 
 from src.apps.core.domain.exceptions import Boom
+
+
+class Symbols(StrEnum):
+    empty = "-"
+    flag = "🚩"
+    bomb = "💣"
 
 
 @dataclass
@@ -51,7 +57,7 @@ class MineBlock:
     def flag(self, board):
         if board.get_flag():
             self.is_flagged = True
-            self.display = "🚩"
+            self.display = Symbols.flag
 
     def remove_flag(self, board):
         if self.is_flagged:
@@ -61,14 +67,14 @@ class MineBlock:
 
     def reveal(self, board: Board) -> None:
         if self.is_bomb:
-            self.display = "💣"
+            self.display = Symbols.bomb
             return
 
         if bombs := self.bombs_around(board):
             self.display = str(bombs)
             return
 
-        self.display = "-"
+        self.display = Symbols.empty
 
     def get_neighbors(self, board: Board) -> list[MineBlock]:
         x = self.coordinates.x
@@ -104,6 +110,7 @@ class MineBlock:
 class Board:
     blocks: list[list[MineBlock]]
     flags: int
+    slug: str = ""
 
     def get_block(self, coordinates: Coordinates) -> MineBlock:
         """Get a block at specific coordinates"""
@@ -153,9 +160,11 @@ class GameConfig:
 
     difficulty: Difficulty
 
-    def new_board(self):
+    def new_board(self, slug=""):
         width, height, bombs = self.difficulty.value
-        return Board(blocks=generate_blocks(width, height, bombs), flags=bombs)
+        return Board(
+            blocks=generate_blocks(width, height, bombs), flags=bombs, slug=slug
+        )
 
 
 def generate_blocks(width: int, height: int, bomb_count: int) -> list[list[MineBlock]]:

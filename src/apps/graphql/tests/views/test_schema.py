@@ -78,10 +78,10 @@ def test_game_schema(client_query, game):
 @pytest.mark.django_db
 def test_update_board_mutation(client_query, game):
     mutation = """
-        mutation UpdateBoard($slug: String!, $coordinates: CoordinatesInput!) {
-            updateBoard(slug: $slug, coordinates: $coordinates) {
-                ok
-                board {
+        mutation UpdateBoard($slug: String!, $coordinates: CoordinatesInput!, $action: String!) {
+            updateBoard(slug: $slug, coordinates: $coordinates, action: $action) {
+                gameOver
+                mineSweeper {
                     slug
                     blocks {
                         coordinates {
@@ -95,10 +95,7 @@ def test_update_board_mutation(client_query, game):
         }
     """
 
-    variables = {
-        "slug": game.slug,
-        "coordinates": {"x": 0, "y": 0},
-    }
+    variables = {"slug": game.slug, "coordinates": {"x": 0, "y": 0}, "action": "dig"}
 
     resp = client_query(
         mutation,
@@ -110,12 +107,12 @@ def test_update_board_mutation(client_query, game):
     assert "errors" not in resp
     data = resp["data"]["updateBoard"]
 
-    assert data["ok"] is True
-    assert data["board"] is not None
-    assert "blocks" in data["board"]
+    assert data["gameOver"] is False
+    assert data["mineSweeper"] is not None
+    assert "blocks" in data["mineSweeper"]
 
     # Check the returned block format
-    first_block = data["board"]["blocks"][0]
+    first_block = data["mineSweeper"]["blocks"][0]
     assert "coordinates" in first_block
     assert "display" in first_block
 

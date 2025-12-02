@@ -23,8 +23,8 @@ class GameManager(models.Manager):
         slug: str,
         difficulty: GameConfig.Difficulty = GameConfig.Difficulty.medium,
     ):
-        board = GameConfig(difficulty).new_board()
-        return self.create(slug=slug, difficulty=difficulty, board=asdict(board))
+        board = GameConfig(difficulty).new_board(slug)
+        return self.create(slug=slug, difficulty=difficulty.name, board=asdict(board))
 
     def get_by_slug(
         self,
@@ -40,7 +40,7 @@ class Game(BaseModel):
     board = models.JSONField(default=empty_board)
     game_over = models.BooleanField(default=False)
     won = models.BooleanField(default=False)
-    finish_time = models.DateTimeField(null=True)
+    finish_time = models.DateTimeField(null=True, blank=True)
     difficulty = models.CharField(
         choices=[
             (d.name, "-".join(str(v) for v in d.value)) for d in GameConfig.Difficulty
@@ -51,4 +51,5 @@ class Game(BaseModel):
         return Board(
             blocks=[[MineBlock(**b) for b in col] for col in self.board["blocks"]],
             flags=self.board["flags"],
+            slug=self.slug,
         )
