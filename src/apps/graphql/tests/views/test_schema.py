@@ -75,6 +75,50 @@ def test_game_schema(client_query, game):
     assert resp["data"]["mineSweeper"] == expected
 
 
-@pytest.fixture
-def game():
-    return Game.objects.new_game("my-game")
+@pytest.mark.django_db
+def test_update_board_mutation(client_query, game):
+    mutation = """
+        mutation UpdateBoard($slug: String!, $coordinates: CoordinatesInput!) {
+            updateBoard(slug: $slug, coordinates: $coordinates) {
+                ok
+                board {
+                    slug
+                    blocks {
+                        coordinates {
+                            x
+                            y
+                        }
+                        display
+                    }
+                }
+            }
+        }
+    """
+
+    variables = {
+        "slug": game.slug,
+        "coordinates": {"x": 0, "y": 0},
+    }
+
+    resp = client_query(
+        mutation,
+        operation_name="UpdateBoard",
+        variables=variables,
+    )
+
+    # --- Assertions ---
+    assert "errors" not in resp
+    data = resp["data"]["updateBoard"]
+
+    assert data["ok"] is True
+    assert data["board"] is not None
+    assert "blocks" in data["board"]
+
+    # Check the returned block format
+    first_block = data["board"]["blocks"][0]
+    assert "coordinates" in first_block
+    assert "display" in first_block
+
+    coords = first_block["coordinates"]
+    assert "x" in coords
+    assert "y" in coords

@@ -7,3 +7,4 @@ def update_board_use_case(slug: str, x: int, y: int):
     board = game.get_board()
     block = board.get_block(Coordinates(x, y))
     block.dig(board)
+    return board

@@ -5,4 +5,4 @@ import pytest
 
 @pytest.mark.django_db
 def test_update_board(game):
-    update_board_use_case(game.slug, 0, 0)
+    assert update_board_use_case(game.slug, 0, 0)
