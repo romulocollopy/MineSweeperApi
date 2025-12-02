@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from dj_database_url import parse as db_url
+import decouple
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-)$#ja@6mvh02r#%)4(lfut8t^lopz%r!6fc(q#5c!lnn#gnqmx"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = decouple.config("DEBUG", False)
 
 GRAPHENE = {
     "MIDDLEWARE": [
@@ -32,24 +34,26 @@ GRAPHENE = {
 }
 
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = decouple.config(
+    "ALLOWED_HOSTS", default="api.localhost:8880,localhost:8089", cast=decouple.Csv()
+)
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False  # Must be False to access via JavaScript
 CSRF_USE_SESSIONS = False
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://www.localhost:3000",
-]
+CSRF_TRUSTED_ORIGINS = decouple.config(
+    "CSRF_TRUSTED_ORIGINS",
+    default="http://localhost:3000,http://localhost:5173,http://www.localhost:3000",
+    cast=decouple.Csv(),
+)
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://www.localhost:3000",
-]
+CORS_ALLOWED_ORIGINS = decouple.config(
+    "CORS_ALLOWED_ORIGINS",
+    default="http://localhost:3000,http://localhost:5173,http://www.localhost:3000",
+    cast=decouple.Csv(),
+)
 
 
 # Application definition
@@ -102,12 +106,8 @@ WSGI_APPLICATION = "wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": decouple.config("DATABASE_URL", default=f"sqlite:///{BASE_DIR}"),
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

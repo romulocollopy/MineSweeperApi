@@ -1,4 +1,4 @@
-FROM python:3.14-slim AS base
+FROM python:3.13-slim AS base
 
 ARG PORT=8089
 ARG APP_NAME=app
@@ -45,10 +45,25 @@ EXPOSE 8089
 
 CMD ["./scripts/init-server.sh"]
 
-### PROD
 
 
-FROM python:3.14-slim AS prod
+FROM base AS dev
+
+ARG PORT=8089
+ENV PORT=$PORT
+
+USER root
+
+ENV \
+  PYTHONBREAKPOINT=ipdb.set_trace
+
+RUN uv sync --locked --no-install-project --no-editable --active
+
+COPY . $APP_PATH
+
+CMD ["./scripts/init-dev-server.sh"]
+
+FROM python:3.13-slim AS prod
 
 ARG VIRTUAL_ENV=/opt/venv
 ARG PORT=8089
@@ -74,21 +89,3 @@ WORKDIR $APP_PATH
 USER $APP_NAME
 
 CMD ["./scripts/init-server.sh"]
-
-### DEV
-
-FROM base AS dev
-
-ARG PORT=8089
-ENV PORT=$PORT
-
-USER root
-
-ENV \
-  PYTHONBREAKPOINT=ipdb.set_trace
-
-RUN uv sync --locked --no-install-project --no-editable --active
-
-COPY . $APP_PATH
-
-CMD ["./scripts/init-dev-server.sh"]
