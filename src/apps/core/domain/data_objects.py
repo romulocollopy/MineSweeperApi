@@ -5,7 +5,6 @@ import random
 
 from dataclasses import asdict, dataclass
 from enum import Enum
-from typing import Self
 
 from src.apps.core.domain.exceptions import Boom
 
@@ -29,7 +28,15 @@ class MineBlock:
         if isinstance(self.coordinates, dict):
             self.coordinates = Coordinates(**self.coordinates)
 
-    def dig(self, board: Board, origin: Self | None = None) -> Board:
+    def dig(self, board: Board, visited: set[tuple[int, int]] | None = None) -> Board:
+        if visited is None:
+            visited = set()
+
+        coord_tuple = (self.coordinates.x, self.coordinates.y)
+        if coord_tuple in visited:
+            return board  # Already revealed
+
+        visited.add(coord_tuple)
         self.reveal(board)
 
         if self.is_bomb:
@@ -37,9 +44,7 @@ class MineBlock:
 
         if self.bombs_around(board) == 0:
             for neighbor in self.get_neighbors(board):
-                if origin and neighbor.coordinates == origin.coordinates:
-                    continue
-                neighbor.dig(board, self)
+                neighbor.dig(board, visited)
 
         return board
 
