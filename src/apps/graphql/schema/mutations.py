@@ -15,16 +15,16 @@ class UpdateBoardMutation(graphene.Mutation):
         coordinates = CoordinatesInput(required=True)
 
     # What the mutation returns
-    ok = graphene.Boolean()
-    board = graphene.Field(lambda: BoardType)
+    game_over = graphene.Boolean()
+    mine_sweeper = graphene.Field(lambda: BoardType)
 
     def mutate(self, info, slug, coordinates):
         x = coordinates.get("x")
         y = coordinates.get("y")
 
-        board = update_board_use_case(slug, x, y)
+        board, game_over = update_board_use_case(slug, x, y)
 
-        return UpdateBoardMutation(ok=True, board=board.as_dict())
+        return UpdateBoardMutation(game_over=game_over, mine_sweeper=board.as_dict())
 
 
 class Mutation(graphene.ObjectType):

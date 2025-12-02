@@ -40,12 +40,14 @@ CSRF_USE_SESSIONS = False
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
+    "http://localhost:5173",
     "http://www.localhost:3000",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://localhost:5173",
     "http://www.localhost:3000",
 ]
 
