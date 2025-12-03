@@ -22,10 +22,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-)$#ja@6mvh02r#%)4(lfut8t^lopz%r!6fc(q#5c!lnn#gnqmx"
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = decouple.config("DEBUG", False)
+
+SECRET_KEY = decouple.config(
+    "SECRET_KEY",
+    "django-insecure-)$#ja@6mvh02r#%)4(lfut8t^lopz%r!6fc(q#5c!lnn#gnqmx"
+    if DEBUG
+    else None,
+)
+
 
 GRAPHENE = {
     "MIDDLEWARE": [
@@ -106,7 +111,9 @@ WSGI_APPLICATION = "wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    "default": decouple.config("DATABASE_URL", default=f"sqlite:///{BASE_DIR}"),
+    "default": decouple.config(
+        "DATABASE_URL", default=f"sqlite:///{BASE_DIR}", parse=db_url
+    ),
 }
 
 # Password validation
