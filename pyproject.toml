@@ -9,6 +9,7 @@ dependencies = [
   "django>=5.2.7",
   "django-cors-headers>=4.9.0",
   "graphene-django>=3.2.3",
+  "psycopg2-binary>=2.9.11",
   "python-decouple>=3.8",
   "uvicorn>=0.38.0",
 ]

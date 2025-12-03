@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-DEBUG = decouple.config("DEBUG", False)
+DEBUG = decouple.config("DEBUG", False, cast=bool)
 
 SECRET_KEY = decouple.config(
     "SECRET_KEY",
@@ -112,7 +112,7 @@ WSGI_APPLICATION = "wsgi.application"
 
 DATABASES = {
     "default": decouple.config(
-        "DATABASE_URL", default=f"sqlite:///{BASE_DIR}", parse=db_url
+        "DATABASE_URL", default=f"sqlite:///{BASE_DIR}", cast=db_url
     ),
 }
 
