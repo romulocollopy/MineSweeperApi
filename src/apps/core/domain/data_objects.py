@@ -159,9 +159,21 @@ class GameConfig:
     """Configuration for game settings"""
 
     class Difficulty(Enum):
-        easy = (10, 10, 1)
+        easy = (9, 9, 10)
         medium = (16, 16, 40)
-        hard = (20, 20, 100)
+        hard = (30, 16, 99)
+
+        @classmethod
+        def _missing_(cls, value):
+            if not isinstance(value, str):
+                return None
+
+            value = value.lower()
+            for member in cls:
+                if member.name == value:
+                    return member
+
+            return None
 
     difficulty: Difficulty
 
