@@ -1,12 +1,10 @@
+import logging
 import graphene
 
+from src.apps.core.domain.data_objects import GameConfig
 from src.apps.core.models import Game
 
-
-class UserType(graphene.ObjectType):
-    id = graphene.ID()
-    name = graphene.String()
-    email = graphene.String()
+logger = logging.getLogger(__name__)
 
 
 class CoordinateType(graphene.ObjectType):

@@ -89,3 +89,8 @@ def test_dig_cascades__changes_display(board: Board):
     assert board.blocks[2][0].display == "-"
     assert board.blocks[2][1].display == "-"
     assert board.blocks[2][2].display == "-"
+
+
+@pytest.mark.parametrize("diff_string", ("easy", "medium", "hard"))
+def test_game_config_difficulty(diff_string):
+    GameConfig.Difficulty(diff_string)
