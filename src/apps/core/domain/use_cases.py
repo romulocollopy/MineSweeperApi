@@ -21,15 +21,14 @@ def update_board_use_case(slug: str, x: int, y: int, action: str):
     block = board.get_block(Coordinates(x, y))
     try:
         run_action(block, board, action)
+        if board.has_won():
+            game.won = True
+            game.finish_time = datetime.datetime.now()
     except Boom as exc:
         game.game_over = True
         game.finish_time = datetime.datetime.now()
         board = exc.board
     finally:
-        if board.has_won():
-            game.won = True
-            game.finish_time = datetime.datetime.now()
         game.board = asdict(board)
         game.save()
-
-    return board, game.game_over, game.won
+        return board, game.game_over, game.won, game.time_elapsed

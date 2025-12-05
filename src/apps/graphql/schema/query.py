@@ -26,25 +26,35 @@ class BoardType(graphene.ObjectType):
     flags = graphene.Int()
     game_over = graphene.Boolean()
     won = graphene.Boolean()
+    time_elapsed = graphene.Int()
+    difficulty = graphene.String()
 
 
 class Query(graphene.ObjectType):
-    viewer = graphene.Field(UserType)
-    mineSweeper = graphene.Field(BoardType, slug=graphene.String(required=True))
+    mine_sweeper = graphene.Field(
+        BoardType,
+        slug=graphene.String(required=True),
+        difficulty=graphene.String(),
+    )
 
-    def resolve_viewer(self, info):
-        # Just return a dict with the required fields
-        return {"id": "user_123", "name": "Test User", "email": "test@example.com"}
-
-    def resolve_mineSweeper(self, info, slug):
-        # Just return a dict with the required fields
+    def resolve_mine_sweeper(self, info, slug, difficulty=None):
+        print((slug, difficulty))
         try:
             game = Game.objects.get_by_slug(slug=slug)
         except Game.DoesNotExist:
-            game = Game.objects.new_game(slug=slug)
+            try:
+                difficulty = GameConfig.Difficulty(difficulty)
+            except Exception:
+                logger.exception(f"Invalid difficulty selected: {difficulty}")
+                difficulty = GameConfig.Difficulty.hard
+
+            print((slug, difficulty))
+
+            game = Game.objects.new_game(slug=slug, difficulty=difficulty)
 
         return {
             **game.get_board().as_dict(),
             "game_over": game.game_over,
             "won": game.won,
+            "time_elapsed": game.time_elapsed,
         }

@@ -19,15 +19,19 @@ class UpdateBoardMutation(graphene.Mutation):
     game_over = graphene.Boolean()
     won = graphene.Boolean()
     mine_sweeper = graphene.Field(lambda: BoardType)
+    time_elapsed = graphene.Int()
 
     def mutate(self, info, slug, coordinates, action):
         x = coordinates.get("x")
         y = coordinates.get("y")
 
-        board, game_over, won = update_board_use_case(slug, x, y, action)
+        board, game_over, won, time_elapsed = update_board_use_case(slug, x, y, action)
 
         return UpdateBoardMutation(
-            game_over=game_over, mine_sweeper=board.as_dict(), won=won
+            game_over=game_over,
+            mine_sweeper=board.as_dict(),
+            won=won,
+            time_elapsed=time_elapsed,
         )
 
 

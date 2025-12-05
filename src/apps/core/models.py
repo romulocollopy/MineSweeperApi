@@ -1,4 +1,5 @@
 from __future__ import annotations
+import datetime
 from dataclasses import asdict
 from django.db import models
 
@@ -53,3 +54,10 @@ class Game(BaseModel):
             flags=self.board["flags"],
             slug=self.slug,
         )
+
+    @property
+    def time_elapsed(self) -> int:
+        elapsed: datetime.timedelta = (
+            datetime.datetime.now(tz=datetime.UTC) - self.created_at
+        )
+        return elapsed.seconds

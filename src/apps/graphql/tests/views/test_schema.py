@@ -10,23 +10,6 @@ def test_schema_empty_query(client_query):
     assert exc_info.match(f".*{HTTPStatus.BAD_REQUEST}.*")
 
 
-def test_user_schema(client_query):
-    resp = client_query(
-        """
-        query UserProfileQuery {
-            viewer {
-                id
-                name
-                email
-            }
-        }
-        """,
-        operation_name="UserProfileQuery",
-    )
-
-    assert "data" in resp
-
-
 @pytest.mark.django_db
 def test_game_schema(client_query, game):
     resp = client_query(
@@ -35,6 +18,9 @@ def test_game_schema(client_query, game):
             mineSweeper(slug: $slug) {
             slug
             flags
+            gameOver
+            won
+            timeElapsed
             blocks {
                 coordinates {
                     x
@@ -56,6 +42,9 @@ def test_game_schema(client_query, game):
 
     expected = {
         "slug": game.slug,
+        "gameOver": game.game_over,
+        "timeElapsed": game.time_elapsed,
+        "won": game.won,
         **game.get_board().as_dict(),
     }
 
@@ -82,6 +71,7 @@ def test_update_board_mutation(client_query, game):
                 gameOver
                 mineSweeper {
                     slug
+                    flags
                     blocks {
                         coordinates {
                             x
@@ -107,6 +97,55 @@ def test_update_board_mutation(client_query, game):
     data = resp["data"]["updateBoard"]
 
     assert data["gameOver"] is False
+    assert data["mineSweeper"] is not None
+    assert "blocks" in data["mineSweeper"]
+    assert "flags" in data["mineSweeper"]
+
+    # Check the returned block format
+    first_block = data["mineSweeper"]["blocks"][0]
+    assert "coordinates" in first_block
+    assert "display" in first_block
+
+    coords = first_block["coordinates"]
+    assert "x" in coords
+    assert "y" in coords
+
+
+@pytest.mark.django_db
+def test_update_board_mutation__game_over(client_query, game):
+    mutation = """
+        mutation UpdateBoard($slug: String!, $coordinates: CoordinatesInput!, $action: String!) {
+            updateBoard(slug: $slug, coordinates: $coordinates, action: $action) {
+                gameOver
+                timeElapsed
+                mineSweeper {
+                    slug
+                    flags
+                    blocks {
+                        coordinates {
+                            x
+                            y
+                        }
+                        display
+                    }
+                }
+            }
+        }
+    """
+
+    variables = {"slug": game.slug, "coordinates": {"x": 0, "y": 1}, "action": "dig"}
+
+    resp = client_query(
+        mutation,
+        operation_name="UpdateBoard",
+        variables=variables,
+    )
+
+    # --- Assertions ---
+    assert "errors" not in resp
+    data = resp["data"]["updateBoard"]
+
+    assert data["gameOver"] is True
     assert data["mineSweeper"] is not None
     assert "blocks" in data["mineSweeper"]
 

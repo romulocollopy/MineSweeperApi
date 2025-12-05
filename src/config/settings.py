@@ -49,14 +49,14 @@ CSRF_USE_SESSIONS = False
 
 CSRF_TRUSTED_ORIGINS = decouple.config(
     "CSRF_TRUSTED_ORIGINS",
-    default="http://localhost:3000,http://localhost:5173,http://www.localhost:3000",
+    default="http://localhost:3000,http://localhost:5173,http://www.localhost:8880",
     cast=decouple.Csv(),
 )
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = decouple.config(
     "CORS_ALLOWED_ORIGINS",
-    default="http://localhost:3000,http://localhost:5173,http://www.localhost:3000",
+    default="http://localhost:3000,http://localhost:5173,http://www.localhost:8880",
     cast=decouple.Csv(),
 )
 
